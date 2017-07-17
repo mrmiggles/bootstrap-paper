@@ -1,0 +1,1 @@
+Edited simple bootstrap theme 
