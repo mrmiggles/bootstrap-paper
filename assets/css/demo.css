@@ -68,3 +68,8 @@
 .table-upgrade td:nth-child(3){
     text-align: center;
 }
+
+.event-updates {
+	position: relative;
+	top: -10px;
+}

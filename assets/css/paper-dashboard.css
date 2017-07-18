@@ -301,7 +301,7 @@ hr {
       margin: 0;
       line-height: 30px;
       font-size: 12px;
-      font-weight: 600;
+      font-weight: normal;
       text-transform: uppercase; }
     .sidebar .nav i,
     .off-canvas-sidebar .nav i {
@@ -1029,6 +1029,10 @@ textarea.form-control {
 .table-striped > tbody > tr > td,
 .table-striped > tfoot > tr > td {
   padding: 15px 8px; }
+
+.table-no-border > tbody > tr > td {
+  border: 0px;
+}
 
 /*      Checkbox and radio         */
 .checkbox,
