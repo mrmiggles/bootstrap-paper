@@ -1,5 +1,4 @@
 $(function(){
-	
 	var svg = d3.select("svg");
 	//var circle = d3.selectAll("circle");
 	//circle.style("fill", "steelblue");
@@ -18,15 +17,18 @@ $(function(){
     .attr("r", function(d) { return Math.sqrt(d); })
     .attr("style", "fill:steelblue;");	
     */
-    var initialBubble = {"x" : 200, "y" : 200};
-    x = 
+    var initialBubble = {"x" : 400, "y" : 400};
+    var startingRadius = 30;
+    var radiusPad = 30;
+
     var graph = {
     	"nodes" : [
-    		{"name": "1", "x" : 200, "y" : 200, "r" : 60},
-    		{"name": "2", "x" : 90, "y" : 200, "r" : 30},
-    		{"name": "3", "x" : 200, "y" : 200, "r" : 30},
-    		{"name": "4", "x" : 250, "y" : 200, "r" : 30},
-    		{"name": "5", "x" : 350, "y" : 200, "r" : 30},
+    		{"name": "1", "x" : 400, "y" : 400, "r" : 60},
+    		{"name": "2", "x" : 220, "y" : 400, "r" : 30},
+    		{"name": "2", "x" : 220, "y" : 480, "r" : 30},
+    		{"name": "3", "x" : 400, "y" : 220, "r" : 30},
+    		{"name": "4", "x" : 580, "y" : 400, "r" : 30},
+    		{"name": "5", "x" : 400, "y" : 580, "r" : 30}
     	]
     };
 
