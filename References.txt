@@ -1,0 +1,6 @@
+https://stackoverflow.com/questions/29639270/space-out-nodes-evenly-around-root-node-in-d3-force-layout
+https://bl.ocks.org/cjhin/4c990c57b9b05e58d56b396751f9747d
+https://bl.ocks.org/mbostock/4600693
+https://bl.ocks.org/shimizu/e6209de87cdddde38dadbb746feaf3a3
+
+https://www.dashingd3js.com/svg-paths-and-d3js
