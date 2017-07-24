@@ -38,6 +38,7 @@ $(function(){
         {"id" : "child10", "group": 1, "radius": 30},
 
 
+        /*        
         {"id" : "child11", "group": 2, "radius": 10},
         {"id" : "child12", "group": 2, "radius": 10},
         {"id" : "child13", "group": 2, "radius": 10},
@@ -45,6 +46,8 @@ $(function(){
         {"id" : "child15", "group": 2, "radius": 10},
         {"id" : "child16", "group": 2, "radius": 10},
         {"id" : "child17", "group": 2, "radius": 10}
+        */
+        
     ];
 
     var links = [
@@ -59,19 +62,18 @@ $(function(){
         {"source": "parent", "target" : "child9", "value": 1},
         {"source": "parent", "target" : "child10", "value": 1},
 
-        {"source": "child5", "target" : "child11", "value": 1, "dist": 25, "charge": 0.01},
-        {"source": "child5", "target" : "child12", "value": 1, "dist": 25, "charge": 0.01},
-        {"source": "child5", "target" : "child13", "value": 1, "dist": 25, "charge": 0.01},
-        {"source": "child5", "target" : "child14", "value": 1, "dist": 25, "charge": 0.01},
-        {"source": "child5", "target" : "child15", "value": 1, "dist": 25, "charge": 0.01},
-        {"source": "child5", "target" : "child16", "value": 1, "dist": 25, "charge": 0.01},
-        {"source": "child5", "target" : "child17", "value": 1, "dist": 25, "charge": 0.01}
-
+        
+        /*
+        {"source": "child5", "target" : "child11", "value": 1, "dist": 65, "charge": 0.01},
+        {"source": "child5", "target" : "child12", "value": 1, "dist": 65, "charge": 0.01},
+        {"source": "child5", "target" : "child13", "value": 1, "dist": 65, "charge": 0.01},
+        {"source": "child5", "target" : "child14", "value": 1, "dist": 65, "charge": 0.01},
+        {"source": "child5", "target" : "child15", "value": 1, "dist": 65, "charge": 0.01},
+        {"source": "child5", "target" : "child16", "value": 1, "dist": 65, "charge": 0.01},
+        {"source": "child5", "target" : "child17", "value": 1, "dist": 65, "charge": 0.01}
+        */
     ];
 
-    var paths = [
-      
-    ];
 
     //center the parent node
     nodes[0].fixed = true;
@@ -92,18 +94,27 @@ $(function(){
 
 
         .force("charge", d3.forceManyBody().strength(function(d){
-          var charge = -500;
+          var charge = -10;
           if(d.index === 0) charge = 10*charge;
           return charge;
         }))
         .force("center", d3.forceCenter(width/2, height/2))
 
+    /*
     var link = svg.append("g")
       .attr("class", "links")
     .selectAll("line")
     .data(links)
       .enter().append("line")
       .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
+    */
+
+var link = svg.append("g")
+    .attr("class", "links")
+    .selectAll("path")
+    .data(links)
+  .enter().append("path")
+    .attr("class", "links");  
 
     var node = svg.append("g")
      .attr("class", "nodes")
@@ -125,13 +136,26 @@ $(function(){
   simulation.force("link")
       .links(links);
 
+   function tickedPaths() {
+
+    node
+        .attr("cx", function(d) { return d.x; })
+        .attr("cy", function(d) { return d.y; });    
+   }
 
    function ticked() {
     link
-        .attr("x1", function(d) { return d.source.x; })
+        /*.attr("x1", function(d) { return d.source.x; })
         .attr("y1", function(d) { return d.source.y; })
         .attr("x2", function(d) { return d.target.x; })
         .attr("y2", function(d) { return d.target.y; });
+        */
+      .attr("d", function(d) {
+       return "M" + d.source.x + "," + d.source.y
+         + " C" +  d.target.x + "," + (d.source.y + d.target.y)/2
+         + " " + d.source.x + "," + (d.source.y + d.target.y)/2
+         + " " + d.target.x + "," + d.target.y;
+       });  
 
     node
         .attr("cx", function(d) { return d.x; })

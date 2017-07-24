@@ -4,3 +4,7 @@ https://bl.ocks.org/mbostock/4600693
 https://bl.ocks.org/shimizu/e6209de87cdddde38dadbb746feaf3a3
 
 https://www.dashingd3js.com/svg-paths-and-d3js
+
+https://leanpub.com/d3-t-and-t-v4/read#leanpub-auto-what-is-a-tree-diagram
+
+https://bl.ocks.org/mbostock/4063550 //radial
