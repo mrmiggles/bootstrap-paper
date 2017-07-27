@@ -16,7 +16,7 @@ var flatData = [
 
 var i = 0,
     duration = 750,
-    rectW = 60,
+    rectW = 70,
     rectH = 30;
 
 // convert the flat data into a hierarchy 
@@ -75,7 +75,7 @@ var node = g.selectAll(".node")
       return "node" + 
         (d.children ? " node--internal" : " node--leaf"); })
     .attr("transform", function(d) { 
-      return "translate(" + d.x + "," + d.y + ")"; });
+      return "translate(" + (d.x - 30) + "," + d.y + ")"; });
 
 // adds the rect to the node
       node.append("rect")
@@ -85,26 +85,56 @@ var node = g.selectAll(".node")
           if(n.length > 1) return rectH*2;
           return rectH;
         })
-        .attr("stroke", "black")
+        .attr("stroke", "#3F88FF")
         .attr("stroke-width", 1)
         .style("fill", function (d) {
-        return d._children ? "lightsteelblue" : "#fff";
+        return d.children ? "#FFDFC7" : "#fff";
     });
 
 // adds the text to the node
     node.append("text")
         .attr("x", rectW / 2)
         .attr("y", rectH / 2)
-        .attr("dy", ".35em")
+        .attr("dy", 0)
+        .attr("transform", "translate(0," + 5 + ")")
         .attr("text-anchor", "middle")
-        .text(function (d) {
-          var n = d.data.name.trim().split(" ");
-          console.log(n.length)
-          var nameFormatted = "";
-          for(let i in n) {
-            nameFormatted += (nameFormatted == "") ? n[i] : "\r\n" + n[i];
-          }
-        return nameFormatted;
-    });
+        .text(function(d){return d.data.name})
+        .call(wrap, rectW);
+
+// Collapse the node and all it's children
+function collapse(d) {
+  if(d.children) {
+    d._children = d.children
+    d._children.forEach(collapse)
+    d.children = null
+  }
+}        
+
+//wrap text if it's too long for the rectangle
+function wrap(text, width) {
+  text.each(function() {
+    var text = d3.select(this),
+        words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.1, // ems
+        y = text.attr("y"),
+        x = text.attr("x"),
+        dy = parseFloat(text.attr("dy")),
+        tspan = text.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em");
+        
+    while (word = words.pop()) {
+      line.push(word);
+      tspan.text(line.join(" "));
+      if (tspan.node().getComputedTextLength() > width) {
+        line.pop();
+        tspan.text(line.join(" "));
+        line = [word];
+        tspan = text.append("tspan").attr("x", x).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+      }
+    }
+  });
+}        
 
 });
