@@ -8,3 +8,7 @@ https://www.dashingd3js.com/svg-paths-and-d3js
 https://leanpub.com/d3-t-and-t-v4/read#leanpub-auto-what-is-a-tree-diagram
 
 https://bl.ocks.org/mbostock/4063550 //radial
+
+https://stackoverflow.com/questions/38310768/d3-js-v4-wacky-link-transition-in-collapsible-tree-example
+
+https://gist.github.com/johan/1392966 //Drag and Drop example

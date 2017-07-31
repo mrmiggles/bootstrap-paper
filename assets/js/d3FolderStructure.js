@@ -1,21 +1,8 @@
+var flatData;
 $(function(){
-  
-var flatData = [
-  {"name": "Components", "parent": null},
-  {"name": "Other", "parent": "Components"},
-  {"name": "Relay", "parent": "Components"},
-  {"name": "Switch", "parent": "Components"},
-  {"name": "Resistitve Position Sensor", "parent": "Other"},
-  {"name": "Inclinometer", "parent": "Other"},
-  {"name": "SPST", "parent": "Relay"},
-  {"name": "DPDT", "parent": "Relay"},
-  {"name": "Momentary", "parent": "Switch"},
-  {"name": "4PDT", "parent": "Relay"},
-  {"name": "Tilt", "parent": "Switch"},
-  {"name": "Pirate", "parent": "Tilt"},
-];
 
-var flatData = [
+var droppedFiles = new Object();
+flatData = [
   {"name": "Uploads", "parent": null, "isFolder": true},
   {"name": "Documents", "parent": "Uploads", "isFolder": true},
   {"name": "Images", "parent": "Uploads", "isFolder": true},
@@ -94,7 +81,9 @@ function updateNodes(source) {
         (d._children ? " node--internal" : " node--leaf"); })
    .attr("transform", function(d) { 
       return "translate(" + (source.x0 - 30) + "," + source.y0 + ")"; })
-   .on("click", click);
+   .on("click", click)
+   .on('dragover', handleDragOver)
+   .on("drop", handleFileSelect);
 
 // adds icon to the node
 nodeEnter.append("image")
@@ -105,9 +94,9 @@ nodeEnter.append("image")
       })
   .attr("x", "-12px")
   .attr("y", "-12px")
-  .attr("width", "24px")
-  .attr("height", "24px");
-
+  .attr("width", "48px")
+  .attr("height", "48px")
+  
 // adds the text to the node
   nodeEnter.append("text")
    .attr("x", rectW / 2)
@@ -116,6 +105,7 @@ nodeEnter.append("image")
    .attr("transform", "translate(0," + 5 + ")")
    .attr("text-anchor", "middle")
    .text(function(d){return d.data.name})
+   .attr("class", "new-file")
    .call(wrap, rectW);  
 
     // Transition nodes to their new position.
@@ -125,18 +115,6 @@ nodeEnter.append("image")
         return "translate(" + d.x + "," + d.y + ")";
     });
 
-    nodeUpdate.select("rect")
-        .attr("width", rectW)
-        .attr("height", function(d){
-          var n = d.data.name.split(" ");
-          if(n.length > 1) return rectH*2;
-          return rectH;
-        })
-        .attr("stroke", "#3F88FF")
-        .attr("stroke-width", 1)
-        .style("fill", function (d) {
-        return d._children ? "#FFDFC7" : "#fff";
-    });
 
     nodeUpdate.select("text")
         .style("fill-opacity", 1);
@@ -170,7 +148,7 @@ nodeEnter.append("image")
 
   // Enter any new links at the parent's previous position.
   var linkEnter = link.enter().insert("path", "g")
-                      .attr("class", "link")
+                      .attr("class", function(d){ if(d.data.newFile) return "link new"; return "link"})
                       .attr("d", function(d) {
       var o = {x: source.x0, y: source.y0, parent:{x: source.x0, y: source.y0}};
       return connector(o);
@@ -202,6 +180,54 @@ nodeEnter.append("image")
     });       
 }
 
+function handleFileSelect(d) {
+  
+  var event = d3.event;
+  event.preventDefault();
+  event.stopPropagation();
+
+  if(!d.data.isFolder || d.data.parent == null) return; //is not a folder node or is the root
+
+  if(d._children) click(d); //expand node before adding to it
+  var files = event.dataTransfer.files // FileList object
+  var selected = d;
+  //console.log(d)
+  for (var i = 0, file; file = files[i]; i++) {
+    flatData.push({"name": file.name, "parent": d.data.name});
+       //creates New OBJECT
+      var newNodeObj = {
+        name: file.name,
+        parent: d.data.name,
+        newFile: true
+      };
+      //Creates new Node 
+      var newNode = d3.hierarchy(newNodeObj);
+      newNode.depth = d.depth + 1; 
+      newNode.height = d.height - 1;
+      newNode.parent = d; 
+      newNode.id = file.name;
+
+      //Selected is a node, to which we are adding the new node as a child
+      //If no child array, create an empty array
+      if(!d.children){
+        d.children = [];
+        d.data.children = [];
+      }
+
+      //Push it to parent.children array  
+      d.children.push(newNode);
+     // d.data.children.push(newNode);
+  }
+
+    updateNodes(d);
+}
+
+function handleDragOver() {
+  var ev = d3.event;
+  ev.stopPropagation();
+  ev.preventDefault();
+  ev.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+}
 
 // Draw Bezier curve for a link
 function connector(d) {
