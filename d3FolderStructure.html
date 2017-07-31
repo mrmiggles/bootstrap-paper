@@ -54,12 +54,33 @@
     stroke-dasharray: 5;
 }
 
-.new-file:before {
-   font-family: FontAwesome;
-   content: "\f00d";
-   position: relative;
+.context-menu {
+  position: absolute;
+  display: none;
+  background-color: #f2f2f2;
+  border-radius: 4px;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  min-width: 150px;
+  border: 1px solid #d4d4d4;
+  z-index:1200;
 }
 
+.context-menu ul {
+  list-style-type: none;
+  margin: 4px 0px;
+  padding: 0px;
+  cursor: default;
+}
+
+.context-menu ul li {
+  padding: 4px 16px;
+}
+
+.context-menu ul li:hover {
+  background-color: #4677f8;
+  color: #fefefe;
+}
     </style>    
 
 </head>
@@ -198,7 +219,5 @@
     <script src="assets/js/d3.min.js"></script>
 
     <!-- d3 Plugin! -->
-    <script src="assets/js/d3FolderStructure.js"></script>    
-
-
+    <script src="assets/js/d3FolderStructure.js"></script>
 </html>

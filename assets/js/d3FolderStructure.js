@@ -56,6 +56,9 @@ var treemap = d3.tree()
 treeData.children.forEach(collapse);
 updateNodes(treeData);
 
+var actions = ["Add File", "Delete"];
+
+
 function updateNodes(source) {
 
   var nodes = treemap(treeData).descendants();
@@ -96,6 +99,38 @@ nodeEnter.append("image")
   .attr("y", "-12px")
   .attr("width", "48px")
   .attr("height", "48px")
+  .on('contextmenu', function(d,i) {
+
+
+    // create the div element that will hold the context menu
+    d3.selectAll('.context-menu').data([1])
+      .enter()
+      .append('div')
+      .attr('class', 'context-menu');
+
+    // close menu
+    d3.select('body').on('click.context-menu', function() {
+      d3.select('.context-menu').style('display', 'none');
+      });
+
+    // this gets executed when a contextmenu event occurs
+    d3.selectAll('.context-menu')
+      .html('')
+      .append('ul')
+      .selectAll('li')
+      .data(actions).enter()
+      .append('li')
+      .on('click' , function(data) { console.log(data)})
+      .text(function(d) { return d; });
+
+    d3.select('.context-menu').style('display', 'none');
+    // show the context menu
+    d3.select('.context-menu')
+      .style('left', (d3.event.pageX - 2) + 'px')
+      .style('top', (d3.event.pageY - 2) + 'px')
+      .style('display', 'block');
+    d3.event.preventDefault();
+  });
   
 // adds the text to the node
   nodeEnter.append("text")
@@ -105,7 +140,6 @@ nodeEnter.append("image")
    .attr("transform", "translate(0," + 5 + ")")
    .attr("text-anchor", "middle")
    .text(function(d){return d.data.name})
-   .attr("class", "new-file")
    .call(wrap, rectW);  
 
     // Transition nodes to their new position.
