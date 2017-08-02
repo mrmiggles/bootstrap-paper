@@ -17,7 +17,11 @@ $(function(){
       if($("#folder-name").val().trim() != "") addNewFolder($("#folder-name").val().trim(), nodeSeleceted);
       $('#add-folder-modal').modal('hide');
       $("#folder-name").val("");
-  })
+  });
+
+  $('#add-folder-modal').on('shown.bs.modal', function (e) {
+    $("#folder-name").focus();
+  })  
 
 
 var droppedFiles = new Object();
@@ -68,7 +72,7 @@ treeData.y0 = height / 2;
 // declares a tree layout and assigns the size
 var treemap = d3.tree()
     .nodeSize([width/3, height/3])
-    .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
+    .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2); });
 
 
 // Define the root
@@ -122,7 +126,7 @@ nodeEnter.append("image")
         return img_dir + "file_icon.png";
       })
   .attr("x", "-12px")
-  .attr("y", "-12px")
+  .attr("y", function(d){ return (d.data.isFolder ? "-12px" : "-3px")})
   .attr("width", "48px")
   .attr("height", "48px")
   .on('contextmenu', function(d,i) {
@@ -131,8 +135,8 @@ nodeEnter.append("image")
     if(d.data.parent == null) return; //don't delete top most node
     nodeSeleceted = d;
 
-    var selectedActions = actions;;
-    if(!d.data.isFolder) selectedActions = _.without(actions, ["Add Folder", "Add File"])
+    var selectedActions = actions;
+    if(!d.data.isFolder) selectedActions = _.without(actions, "Add Folder", "Add File")
 
     // create the div element that will hold the context menu
     d3.selectAll('.context-menu').data([1])
@@ -158,7 +162,7 @@ nodeEnter.append("image")
         d3.select('.context-menu').style('display', 'none');
         switch (data) {
           case "Add Folder":
-          $('#add-folder-modal').modal('show');
+            $('#add-folder-modal').modal('show');
             break;
           case "Add File":
             $("#tmp-file-dialog").trigger("click");
@@ -182,8 +186,8 @@ nodeEnter.append("image")
   
 // adds the text to the node
   nodeEnter.append("text")
-   .attr("x", rectW / 2)
-   .attr("y", rectH / 2)
+   .attr("x", rectW/2)
+   .attr("y", -17)
    .attr("dy", 0)
    .attr("transform", "translate(0," + 5 + ")")
    .attr("text-anchor", "middle")
