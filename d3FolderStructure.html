@@ -56,30 +56,34 @@
 
 .context-menu {
   position: absolute;
-  display: none;
-  background-color: #f2f2f2;
-  border-radius: 4px;
-  font-family: Arial, sans-serif;
-  font-size: 14px;
-  min-width: 150px;
-  border: 1px solid #d4d4d4;
+  display:none;
+  border:1px solid #B2B2B2;
+  width:150px;      background:#F9F9F9;
+  box-shadow: 3px 3px 2px #E9E9E9;
+  border-radius:4px;
   z-index:1200;
 }
 
 .context-menu ul {
-  list-style-type: none;
-  margin: 4px 0px;
-  padding: 0px;
-  cursor: default;
+  list-style:none;
+  margin:0px;
+  margin-top:4px;
+  padding-left:10px;
+  padding-right:10px;
+  padding-bottom:3px;
+  font-size:17px;
+  color: #333333;
 }
 
 .context-menu ul li {
-  padding: 4px 16px;
+  padding: 3px;
+  padding-left:10px;
 }
 
 .context-menu ul li:hover {
-  background-color: #4677f8;
-  color: #fefefe;
+  color: white;
+  background:#284570;
+  border-radius:2px;
 }
     </style>    
 
@@ -169,6 +173,8 @@
                             <!-- Card content -->
                             <div class="content" id="content">
                                 <svg width="800" height="800"></svg>
+
+                                <input id="tmp-file-dialog" type="file" style="display: none" />
                             </div> 
                             <!-- end card content -->
                         </div>                       

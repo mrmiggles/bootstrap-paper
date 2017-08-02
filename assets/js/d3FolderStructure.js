@@ -1,5 +1,14 @@
 var flatData;
+
 $(function(){
+
+  var nodeSeleceted;
+  //listen for file changes on the input
+  $("#tmp-file-dialog").change(function(){
+    console.log($(this)[0].files);
+    if($(this).val()) handleFileSelected(nodeSeleceted, $(this)[0].files);
+  });  
+
 
 var droppedFiles = new Object();
 flatData = [
@@ -56,7 +65,7 @@ var treemap = d3.tree()
 treeData.children.forEach(collapse);
 updateNodes(treeData);
 
-var actions = ["Add File", "Delete"];
+var actions = ["Add Folder", "Add File", "Delete"];
 
 
 function updateNodes(source) {
@@ -86,7 +95,7 @@ function updateNodes(source) {
       return "translate(" + (source.x0 - 30) + "," + source.y0 + ")"; })
    .on("click", click)
    .on('dragover', handleDragOver)
-   .on("drop", handleFileSelect);
+   .on("drop", handleFileDrop);
 
 // adds icon to the node
 nodeEnter.append("image")
@@ -101,6 +110,9 @@ nodeEnter.append("image")
   .attr("height", "48px")
   .on('contextmenu', function(d,i) {
 
+    
+    if(d.data.parent == null) return; //don't delete top most node
+    nodeSeleceted = d;
 
     // create the div element that will hold the context menu
     d3.selectAll('.context-menu').data([1])
@@ -120,7 +132,23 @@ nodeEnter.append("image")
       .selectAll('li')
       .data(actions).enter()
       .append('li')
-      .on('click' , function(data) { console.log(data)})
+      .on('click' , function(data) { 
+        //console.log(nodeSeleceted)
+        //console.log(data)
+        switch (data) {
+          case "Add Folder" :
+            console.log("Add folder pressed")
+            break;
+          case "Add File":
+            $("#tmp-file-dialog").trigger("click");
+            console.log("add file pressed");
+            break;
+          case "Delete":
+            console.log("delete pressed");
+            break;
+          default:
+        }
+      })
       .text(function(d) { return d; });
 
     d3.select('.context-menu').style('display', 'none');
@@ -214,7 +242,7 @@ nodeEnter.append("image")
     });       
 }
 
-function handleFileSelect(d) {
+function handleFileDrop(d) {
   
   var event = d3.event;
   event.preventDefault();
@@ -254,6 +282,43 @@ function handleFileSelect(d) {
   }
 
     updateNodes(d);
+}
+
+function handleFileSelected(d, files){
+  if(d._children) click(d); //expand node before adding to it
+  
+  
+  for (var i = 0, file; file = files[i]; i++) {
+    flatData.push({"name": file.name, "parent": d.data.name});
+       //creates New OBJECT
+      var newNodeObj = {
+        name: file.name,
+        parent: d.data.name,
+        newFile: true
+      };
+      //Creates new Node 
+      var newNode = d3.hierarchy(newNodeObj);
+      newNode.depth = d.depth + 1; 
+      newNode.height = d.height - 1;
+      newNode.parent = d; 
+      newNode.id = file.name;
+
+      //Selected is a node, to which we are adding the new node as a child
+      //If no child array, create an empty array
+      if(!d.children){
+        d.children = [];
+        d.data.children = [];
+      }
+
+      //Push it to parent.children array  
+      d.children.push(newNode);
+     // d.data.children.push(newNode);
+  }
+  updateNodes(d);
+}
+
+function deleteNode(d){
+
 }
 
 function handleDragOver() {
