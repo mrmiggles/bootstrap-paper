@@ -2,6 +2,9 @@ var flatData;
 
 $(function(){
 
+  var totalNodes = 0;
+  var maxLabelLength = 0;
+
   var nodeSeleceted;
   //listen for file changes on the input
   $("#tmp-file-dialog").change(function(){
@@ -46,7 +49,6 @@ var margin = {top: 40, right: 90, bottom: 50, left: 90},
 treeData.x0 = 0;
 treeData.y0 = height / 2;
 
-
   // append the svg obgect to the body of the page
   // moves the 'group' element to the top left margin
   var svg = d3.select("svg")
@@ -61,9 +63,17 @@ var treemap = d3.tree()
     .nodeSize([width/3, height/3])
     .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
 
-//collapese the first level
-treeData.children.forEach(collapse);
-updateNodes(treeData);
+
+// Define the root
+var root = treeData;
+root.x0 = height / 2;
+root.y0 = 0;
+
+//collapese to the first level
+root.children.forEach(collapse);
+
+// Layout the tree initially
+updateNodes(root);
 
 var actions = ["Add Folder", "Add File", "Delete"];
 
@@ -123,7 +133,7 @@ nodeEnter.append("image")
     // close menu
     d3.select('body').on('click.context-menu', function() {
       d3.select('.context-menu').style('display', 'none');
-      });
+    });
 
     // this gets executed when a contextmenu event occurs
     d3.selectAll('.context-menu')
@@ -137,14 +147,15 @@ nodeEnter.append("image")
         //console.log(data)
         switch (data) {
           case "Add Folder" :
+          $('#add-folder-modal').modal('show');
             console.log("Add folder pressed")
             break;
           case "Add File":
             $("#tmp-file-dialog").trigger("click");
-            console.log("add file pressed");
             break;
           case "Delete":
-            console.log("delete pressed");
+            d3.select('.context-menu').style('display', 'none');
+            delete_node(nodeSeleceted);
             break;
           default:
         }
@@ -242,23 +253,12 @@ nodeEnter.append("image")
     });       
 }
 
-function handleFileDrop(d) {
-  
-  var event = d3.event;
-  event.preventDefault();
-  event.stopPropagation();
 
-  if(!d.data.isFolder || d.data.parent == null) return; //is not a folder node or is the root
-
-  if(d._children) click(d); //expand node before adding to it
-  var files = event.dataTransfer.files // FileList object
-  var selected = d;
-  //console.log(d)
-  for (var i = 0, file; file = files[i]; i++) {
+function addNewFolder(nodeName, d) {
     flatData.push({"name": file.name, "parent": d.data.name});
        //creates New OBJECT
       var newNodeObj = {
-        name: file.name,
+        name: nodename,
         parent: d.data.name,
         newFile: true
       };
@@ -267,7 +267,7 @@ function handleFileDrop(d) {
       newNode.depth = d.depth + 1; 
       newNode.height = d.height - 1;
       newNode.parent = d; 
-      newNode.id = file.name;
+      newNode.id = nodeName;
 
       //Selected is a node, to which we are adding the new node as a child
       //If no child array, create an empty array
@@ -277,11 +277,22 @@ function handleFileDrop(d) {
       }
 
       //Push it to parent.children array  
-      d.children.push(newNode);
-     // d.data.children.push(newNode);
-  }
+      d.children.push(newNode);  
 
-    updateNodes(d);
+      updateNodes(d);
+}
+
+function handleFileDrop(d) {
+  
+  var event = d3.event;
+  event.preventDefault();
+  event.stopPropagation();
+
+  if(!d.data.isFolder || d.data.parent == null) return; //is not a folder node or is the root
+
+  var files = event.dataTransfer.files // FileList object
+
+  handleFileSelected(d, files);
 }
 
 function handleFileSelected(d, files){
@@ -317,9 +328,39 @@ function handleFileSelected(d, files){
   updateNodes(d);
 }
 
-function deleteNode(d){
+  // A recursive helper function for performing some setup by walking through all nodes
+  //function from https://bl.ocks.org/adamfeuer/042bfa0dde0059e2b288
+  function visit(parent, visitFn, childrenFn) {
+      if (!parent) return;
 
-}
+      visitFn(parent);
+
+      var children = childrenFn(parent);
+      if (children) {
+          var count = children.length;
+          for (var i = 0; i < count; i++) {
+              visit(children[i], visitFn, childrenFn);
+          }
+      }
+  }
+
+  function delete_node(node) {
+      visit(treeData, function(d) {
+             if (d.children) {
+                     for (var child of d.children) {
+                             if (child == node) {
+                                     d.children = _.without(d.children, child);
+                                     if(_.isEmpty(d.children)) d.children = null;
+                                     updateNodes(d);
+                                     break;
+                             }
+                     } 
+             }
+      },
+      function(d) {
+         return d.children && d.children.length > 0 ? d.children : null;
+     });
+  }
 
 function handleDragOver() {
   var ev = d3.event;
