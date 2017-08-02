@@ -12,6 +12,13 @@ $(function(){
     if($(this).val()) handleFileSelected(nodeSeleceted, $(this)[0].files);
   });  
 
+  $("#add-folder").on("click", function(e){
+      e.preventDefault();
+      if($("#folder-name").val().trim() != "") addNewFolder($("#folder-name").val().trim(), nodeSeleceted);
+      $('#add-folder-modal').modal('hide');
+      $("#folder-name").val("");
+  })
+
 
 var droppedFiles = new Object();
 flatData = [
@@ -124,6 +131,9 @@ nodeEnter.append("image")
     if(d.data.parent == null) return; //don't delete top most node
     nodeSeleceted = d;
 
+    var selectedActions = actions;;
+    if(!d.data.isFolder) selectedActions = _.without(actions, ["Add Folder", "Add File"])
+
     // create the div element that will hold the context menu
     d3.selectAll('.context-menu').data([1])
       .enter()
@@ -140,21 +150,20 @@ nodeEnter.append("image")
       .html('')
       .append('ul')
       .selectAll('li')
-      .data(actions).enter()
+      .data(selectedActions).enter()
       .append('li')
       .on('click' , function(data) { 
         //console.log(nodeSeleceted)
         //console.log(data)
+        d3.select('.context-menu').style('display', 'none');
         switch (data) {
-          case "Add Folder" :
+          case "Add Folder":
           $('#add-folder-modal').modal('show');
-            console.log("Add folder pressed")
             break;
           case "Add File":
             $("#tmp-file-dialog").trigger("click");
             break;
           case "Delete":
-            d3.select('.context-menu').style('display', 'none');
             delete_node(nodeSeleceted);
             break;
           default:
@@ -255,12 +264,13 @@ nodeEnter.append("image")
 
 
 function addNewFolder(nodeName, d) {
-    flatData.push({"name": file.name, "parent": d.data.name});
+    flatData.push({"name": nodeName, "parent": d.data.name});
        //creates New OBJECT
       var newNodeObj = {
-        name: nodename,
+        name: nodeName,
         parent: d.data.name,
-        newFile: true
+        newFile: true,
+        isFolder: true
       };
       //Creates new Node 
       var newNode = d3.hierarchy(newNodeObj);
