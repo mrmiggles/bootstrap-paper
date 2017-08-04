@@ -12,3 +12,8 @@ https://bl.ocks.org/mbostock/4063550 //radial
 https://stackoverflow.com/questions/38310768/d3-js-v4-wacky-link-transition-in-collapsible-tree-example
 
 https://gist.github.com/johan/1392966 //Drag and Drop example
+
+//collapsable tree v4
+https://bl.ocks.org/d3noob/43a860bc0024792f8803bba8ca0d5ecd 
+https://jsfiddle.net/Tokker/mwm1sxhh/21/
+https://rawgit.com/mbostock/1093025/raw/a05a94858375bd0ae023f6950a2b13fac5127637/flare.json

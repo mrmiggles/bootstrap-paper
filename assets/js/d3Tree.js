@@ -15,6 +15,23 @@ var flatData = [
   {"name": "Pirate", "parent": "Tilt"},
 ];
 
+var flatData = [
+  {"@unid": "1", "Subtype": "Components", "Type": null},
+  {"@unid": "2", "Subtype": "Communication", "Type": "Components"},
+  {"@unid": "2", "Subtype": "Other", "Type": "Components"},
+  {"@unid": "3", "Subtype": "Relay", "Type": "Components"},
+  {"@unid": "4", "Subtype": "Switch", "Type": "Components"},
+  {"@unid": "5", "Subtype": "Resistitve Position Sensor", "Type": "Other"},
+  {"@unid": "6", "Subtype": "Inclinometer", "Type": "Other"},
+  {"@unid": "7", "Subtype": "SPST", "Type": "Relay"},
+  {"@unid": "8", "Subtype": "DPDT", "Type": "Relay"},
+  {"@unid": "9", "Subtype": "Momentary", "Type": "Switch"},
+  {"@unid": "10", "Subtype": "4PDT", "Type": "Relay"},
+  {"@unid": "11", "Subtype": "Tilt", "Type": "Switch"},
+  {"@unid": "12", "Subtype": "Pirate", "Type": "Tilt"},
+];
+
+
 var i = 0,
     duration = 550,
     rectW = 70,
@@ -22,10 +39,13 @@ var i = 0,
 
 // convert the flat data into a hierarchy 
 var treeData = d3.stratify()
-  .id(function(d) { return d.name; })
-  .parentId(function(d) { return d.parent; })
+  .id(function(d) { return d.Subtype; })
+  .parentId(function(d) { return d.Type; })
   (flatData);
 
+treeData.each(function(d) {
+    d.name = d.data.Subtype;
+  });
   // assign the name to each node
   treeData.each(function(d) {
     d.name = d.id; //transferring name to a name variable
@@ -98,7 +118,7 @@ function updateNodes(source) {
   nodeEnter.append("rect")
     .attr("width", rectW)
     .attr("height", function(d){
-      var n = d.data.name.split(" ");
+      var n = d.data.Subtype.split(" ");
       if(n.length > 1) return rectH*2;
       return rectH;
     })
@@ -110,7 +130,7 @@ function updateNodes(source) {
    .attr("dy", 0)
    .attr("transform", "translate(0," + 5 + ")")
    .attr("text-anchor", "middle")
-   .text(function(d){return d.data.name})
+   .text(function(d){return d.data.Subtype})
    .call(wrap, rectW);  
 
     // Transition nodes to their new position.
@@ -123,7 +143,7 @@ function updateNodes(source) {
     nodeUpdate.select("rect")
         .attr("width", rectW)
         .attr("height", function(d){
-          var n = d.data.name.split(" ");
+          var n = d.data.Subtype.split(" ");
           if(n.length > 1) return rectH*2;
           return rectH;
         })
@@ -146,7 +166,7 @@ function updateNodes(source) {
     nodeExit.select("rect")
      .attr("width", rectW)
       .attr("height", function(d){
-        var n = d.data.name.split(" ");
+        var n = d.data.Subtype.split(" ");
         if(n.length > 1) return rectH*2;
         return rectH;
       })
